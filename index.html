@@ -8,31 +8,37 @@
 <body>
     <section id="main">
         <h1>Search For Artists</h1>
-        <input type="text" id="searchBox" /><input type="button" id="submit" value="submit" />
+        <form id ="mainForm">
+            <!--Make dropdown-->
+            <input type="text" id="searchBox" />
+            <input type="button" id="submit" value="submit" />
+            <input type = "checkbox" id = 'sAlbum'>
+            <label for="sAlbum"> Albums</label>
+            <input type = "checkbox" id = 'sArtist'>
+            <label for="sArtist">Artists</label>
+            <input type = "checkbox" id = 'sSongs'>
+            <label for="sSongs">Songs</label>
+            <input type = "checkbox" id = 'sPlaylists'>
+            <label for="sPlaylist">Playlists</label>
+        </form>
+        <section>
+            <h1>Load Playlist</h1>
+                <input type ="button" value="Load" id='load'>
 
+                <!-- list of presaved songs -->
 
+                <ol id="lPlaylist">
 
-        <input type = "checkbox" id = 'sAlbum'>
-        <label for="sAlbum"> Albums</label>
-        <input type = "checkbox" id = 'sArtist'>
-        <label for="sArtist">Artists</label>
-        <input type = "checkbox" id = 'sSongs'>
-        <label for="sSongs">Songs</label>
-        <input type = "checkbox" id = 'sPlaylists'>
-        <label for="sPlaylist">Playlists</label>
-       
-        <img src="#" alt="Alternate Text" id="resp"/>
+                    
+                </ol>
+        </section>
+        <section id ="result">
+            <img src=".\img\empty.png" alt="status" id="resp"/>
 
-        <ol id="values">
+            <ol id="values">
             
-        </ol>
-
-
-
-
-
-
-
+            </ol>
+        </section>
 
     </section>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
