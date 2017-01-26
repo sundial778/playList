@@ -1,11 +1,12 @@
 // JavaScript source code
 class Tracks {
     constructor(json) {
-        this.id = json.tracks.id
-        this.name = json.tracks.items[0].name
-        this.artist = json.tracks.items[0].artists[0].name
-        this.album = json.tracks.items[0].album.name
-        this.votes = 0
+        this.id = json.tracks.id;
+        this.name = json.tracks.items[0].name;
+        this.artist = json.tracks.items[0].artists[0].name;
+        this.album = json.tracks.items[0].album.name;
+        this.votes = 0;
+        this.images = json.albums.items[0].images[0].url;
 
     }
 
@@ -30,24 +31,24 @@ $(document).ready(function () {
     const path = 'playlist/playlist.csv'
     const Client_ID = '8dfe31d8c7a44b1a953ba9e3f9b251fc'
     const Client_Secret = 'c04470cf1ab248ff88521866b35d2396'
-    var stuff = [];
+    var trackArray = [];
     
-
+    //This pulls in the playlist. It will be updated and reloaded evry time the user clicks the button
     $('#load').click(function (e) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", path)
-        console.log(xhr.status)
+        
         xhr.send();
         xhr.onreadystatechange = function (e) {
             if (xhr.readyState === 4) {
 
                 if (xhr.status === 200) {
-                    console.log("Saved PlayList");
+                   
                     var csvStr = xhr.responseText
-                    console.log((csvStr))
+                    
                     makeItUseable(csvStr)
                 } else {
-                    console.log(xhr.statusText);
+                    
                 }
             };
 
@@ -56,7 +57,7 @@ $(document).ready(function () {
 
 
     });
-
+    //this converts the csv into a string tht I can eventually use for an API call
     function makeItUseable(text) {
         var textArr = text.split("\n")
         for (i = 0, len = textArr.length; i < len; i++) {
@@ -68,12 +69,12 @@ $(document).ready(function () {
         var objArr = []
         var headers = textArr[0].split(",")
         for (i = 1; i < textArr.length; i++) {
-            var searchStuff = {}
+            var searchObj = {}
             var tempArr = textArr[i].split(',')
-            searchStuff[headers[0]] = tempArr[0]
-            searchStuff[headers[1]] = tempArr[1]
-            searchStuff.searchString = "track:" + tempArr[0] + "+artist:" + tempArr[1] + "&type=track&limit=1"
-            objArr.push(searchStuff)
+            searchObj[headers[0]] = tempArr[0]
+            searchObj[headers[1]] = tempArr[1]
+            searchObj.searchString = "track:" + tempArr[0] + "+artist:" + tempArr[1] + "&type=track&limit=1"
+            objArr.push(searchObj)
         }
         objArr.forEach(function (data) {
             callMeBeepMe(data.searchString)
@@ -81,10 +82,11 @@ $(document).ready(function () {
     }
 
 
-
+    //this makes the calls to the API. Either from the user input or the CSV
     function callMeBeepMe(que) {
         var xhr = new XMLHttpRequest();
         var restPonse = "";
+        trackArray = [];
         xhr.open("GET", url.replace('[ARG1]', que));
         xhr.send();
         xhr.onreadystatechange = function (e) {
@@ -95,27 +97,28 @@ $(document).ready(function () {
                     restPonse = this.responseText
 
                     restPonse = JSON.parse(this.responseText);
-
-                    console.log(restPonse)
+                    //make sure that there are results before returning anything
+                    //if (restPonse.albums.items.length < 1) {
+                    //    console.log(xhr.statusText);
+                    //    $('#resp').attr('src', './img/red_x.png');
+                    //    return null;
+                        
+                   // }
+                    
 
                     $('#resp').attr('src', './img/green_check.png');
 
                     makeTrack(restPonse);
-                    stuff.forEach(function(data){
-                        $('#values').append(data.name);
-                    })
                     
 
-                    console.log(stuff.length)
-                    /* for(i = 1; i < stuff.count;i++){
-
-                     }*/
                 } else {
                     console.log(xhr.statusText);
                     $('#resp').attr('src', './img/red_x.png');
 
                 }
-
+                trackArray.forEach(function(data){
+                    $('#values').append('<li>' + "Artist:" + data.artist + '<br>' + "Song Name: " + data.name + '<br>' + " Album:" + data.album + '<br>' + '<img src =' + data.images + ' alt =' + data.name   +'height="200" width ="200"'+ '>'+'</li>')
+                })
             }
         };
 
@@ -130,10 +133,10 @@ $(document).ready(function () {
     }
     var searchName;
 
-    function makeTrack(json) {
+    function makeTrack(param) {
 
-        var tempTrack = new Tracks(json);
-        stuff.push(tempTrack)
+        var tempTrack = new Tracks(param);
+        trackArray.push(tempTrack)
     }
 
     $('#submit').click(function (e) {
