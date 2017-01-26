@@ -2,6 +2,7 @@
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <link rel="stylesheet" href="main.css"
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -12,14 +13,13 @@
             <!--Make dropdown-->
             <input type="text" id="searchBox" />
             <input type="button" id="submit" value="submit" />
-            <input type = "checkbox" id = 'sAlbum'>
-            <label for="sAlbum"> Albums</label>
-            <input type = "checkbox" id = 'sArtist'>
-            <label for="sArtist">Artists</label>
-            <input type = "checkbox" id = 'sSongs'>
-            <label for="sSongs">Songs</label>
-            <input type = "checkbox" id = 'sPlaylists'>
-            <label for="sPlaylist">Playlists</label>
+            <select name="searchType" id="sBox">
+                <option disabled value="All">All</option>
+                <option disabled value="Album">Albums</option>
+                <option disabled value="Artist">Artists</option>
+                <option value="Song">Track</option>
+               
+            </select>
         </form>
         <section>
             <h1>Load Playlist</h1>
