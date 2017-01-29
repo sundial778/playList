@@ -1,20 +1,87 @@
-/*body{
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) { 
+    body{
     background-color:rgb(0, 0, 0);
+    background-image: url(img/bg1.jpg);  
+   -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 #result{
-    background-color:white;
-    border:solid gray 2px;
+    background-color:red;
+    border:outset gray 2px;
     padding:10px;
     text-align:center;
-    background-image:url();
+    
     background-size:contain;
 }
 section{
-    background-color:white;
+    background-color:red;
     border:solid gray 2px;
     padding:10px;
     text-align:center;
 }
 form{
 
-}*/
+}
+
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) { 
+    body{
+    background: url(img/bg1.jpg)  
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+#result{
+  
+    border:solid gray 2px;
+    padding:10px;
+    text-align:center;
+    
+    background-size:contain;
+}
+section{
+   
+    border:solid gray 2px;
+    padding:10px;
+    text-align:center;
+}
+form{
+
+}
+
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+    body{
+    background: url(img/bg1.jpg)  
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+#result{
+    
+    border:solid gray 2px;
+    padding:10px;
+    text-align:center;
+    
+    background-size:contain;
+}
+section{
+    
+    border:solid gray 2px;
+    padding:10px;
+    text-align:center;
+}
+form{
+
+}
+
+}
