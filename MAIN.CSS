@@ -1,5 +1,5 @@
 /* Portrait tablet to landscape and desktop */
-@media (min-width: 768px) and (max-width: 979px) { 
+@media (min-width: 768px) { 
     body{
     background-color:rgb(0, 0, 0);
     background-image: url(img/bg1.jpg);  
@@ -9,7 +9,7 @@
   background-size: cover;
 }
 #result{
-    background-color:red;
+   
     border:outset gray 2px;
     padding:10px;
     text-align:center;
@@ -17,7 +17,7 @@
     background-size:contain;
 }
 section{
-    background-color:red;
+    
     border:solid gray 2px;
     padding:10px;
     text-align:center;
