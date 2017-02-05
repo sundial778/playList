@@ -49,14 +49,14 @@ class Artist {
 
 $(document).ready(function () {
 
-    const url = 'https://api.spotify.com/v1/search/?q=[ARG1]&type=[ARG2]&limit=1'
-    const path = 'playlist/playlist.csv'
-    const Client_ID = '8dfe31d8c7a44b1a953ba9e3f9b251fc'
-    const Client_Secret = 'c04470cf1ab248ff88521866b35d2396'
-    var sRestrict = "Track"
+    const url = 'https://api.spotify.com/v1/search/?q=[ARG1]&type=[ARG2]&limit=1';
+    const path = 'playlist/playlist.csv';
+    const Client_ID = '8dfe31d8c7a44b1a953ba9e3f9b251fc';
+    const Client_Secret = 'c04470cf1ab248ff88521866b35d2396';
+    var sRestrict = $('#sBox').val()
     var valArray = [];
 
-    //This pulls in the playlist. It will be updated and reloaded evry time the user clicks the button
+   //[ This pulls in the playlist. It will be updated and reloaded evry time the user clicks the button
     $('#load').click(function (e) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", path)
@@ -69,7 +69,7 @@ $(document).ready(function () {
 
                     var csvStr = xhr.responseText
 
-                    makeItUseable(csvStr)
+                    makeItUseable(csvStr,"Load")
                 } else {
 
                 }
@@ -80,9 +80,9 @@ $(document).ready(function () {
 
 
     });
-    console.log(sRestrict)
+
     //this converts the csv into a string tht I can eventually use for an API call
-    function makeItUseable(text) {
+    function makeItUseable(text, param) {
         var textArr = text.split("\n")
         for (i = 0, len = textArr.length; i < len; i++) {
             while (textArr[i] == "") {
@@ -101,42 +101,73 @@ $(document).ready(function () {
             objArr.push(searchObj)
         }
         objArr.forEach(function (data) {
-            callMeBeepMe(data.searchString)
+            search(data.searchString, param)
         });
     }
 
+    //Search for artist, track album etcetera
+    $('#submit').click(function (e) {
+        //user input into search box
+        searchName = $('#searchBox').val()
+        console.log(sRestrict)
+        //xhr
+        search(searchName, sRestrict);
+        //clear the list before appending results
+        $('#values').html('')
+        e.preventDefault();
+    });//]  the first step. 
 
-    //this makes the calls to the API. Either from the user input or the CSV
+
+
+    //monitoring what is being searched for
+    console.log(sRestrict)
+//[SECOND STEP
     function search(que, searchParam) {
+        //A small workaround until I get the search type working
+        let searchModifier = false
+        if (searchParam == "Load") {
+            searchParam = "Track"
+             searchModifier = true
+        }
+
+        //package my data into a 'link'
         var xhr = new XMLHttpRequest();
         var restPonse = "";
+        //^^^^ the eventual rest(see what i did there)ing place for the JSON string
         var newUrl = url.replace('[ARG1]', que)
-        trackArray = [];
+        //every time a call is made, the URL has to be updated witht he search parameter and the search type
+        valArray = [];
         newUrl = newUrl.replace('[ARG2]', searchParam)
+
+        //aforementioned search type ^^^
         xhr.open("GET", newUrl);
+        //Spotify, Please tell me what you have that is relevant to the query I have sent you?
         xhr.send();
         xhr.onreadystatechange = function (e) {
             if (this.readyState === 4) {
-
+                //The call went through
                 if (this.status === 200) {
-
+                    //there is someone at the other end!
                     restPonse = this.responseText
-
-                    restPonse = JSON.parse(this.responseText);
-                    //make sure that there are results before returning anything
-                    //if (restPonse.albums.items.length < 1) {
-                    //    console.log(xhr.statusText);
-                    //    $('#resp').attr('src', './img/red_x.png');
-                    //    return null;
-
-                    // }
-
-
+                    //this is what they said
+                    if (restPonse !== "") {
+                        restPonse = JSON.parse(this.responseText);
+                        //make sure that there are results before returning anything
+                    }
+                    else {
+                        console.log(xhr.statusText);
+                        $('#resp').attr('src', './img/red_x.png');
+                        //No response!
+                    };
+                    //a visual aid to know that your call and response was good!
                     $('#resp').attr('src', './img/green_check.png');
+                    //searchmodifier is part of the workaround
+                    if (searchModifier === true) {
+                        searchParam = "Load"
+                    }
+                    makeObj(restPonse, searchParam);
 
-                    makeObj(restPonse);
-
-
+                    //Well if no one picked up thereis no need to leave a voicemail. Also if you had a bad number, no need to hang on to the phone.
                 } else {
                     console.log(xhr.statusText);
                     $('#resp').attr('src', './img/red_x.png');
@@ -144,10 +175,55 @@ $(document).ready(function () {
                 }
 
             }
-
+            //anything else that goes wrong, handle it and move on
             xhr.onerror = function (e) {
                 console.log(xhr.statusText);
-            };
+            }; //]
+
+
+            //This is specific for the searches that the user does. 
+            function makeObj(param, load) {
+                var tempObj
+                valArray = []
+                switch (load) {
+                    //what type of search is it? Because of the workaround it limits the search to be either a track or a 'load'
+                    case "Album":
+                        tempObj = new Album(param);
+                        tempObj.songs.push()
+                        break;
+                    case "Artist":
+                        tempObj = new Artist(param);
+                        break;
+                    case "Track":
+                        tempObj = new Tracks(param);
+                        break;
+                    case "Load":
+                        tempObj = new Tracks(param);
+                        break;
+
+
+                }
+                //made the object type and put it in an array to store it
+                valArray.push(tempObj)
+                if (load !== "Load") {
+                    writeToPage(valArray, "Track")
+                }
+                else {
+                    writeToPage(valArray, load)
+                }
+
+            }
+
+
+
+
+
+
+   
+
+
+    //this makes the calls to the API. Either from the user input or the CSV
+    
 
 
             //  if you wanna reach me
@@ -156,36 +232,13 @@ $(document).ready(function () {
            
     var searchName;
 
-    function makeObj(param) {
-        var tempObj
-        valArray = []
-        switch (sRestrict) {
-
-            case "Album":
-                tempObj = new Album(param);
-                tempObj.songs.push()
-                break;
-            case "Artist":
-                tempObj = new Artist(param);
-                break;
-            case "Track":
-                tempObj = new Tracks(param);
-                break;
-            case "All":
-                tempObj = new Tracks(param);
-                break;
-
-
-        }
-        valArray.push(tempObj)
-        writeToPage(valArray,"Track")
-
-    }
 
 
             //this writes all the data to the page
     function writeToPage(arr,sType) {
-
+        if (sType == "Load") {
+            sRestrict = sType
+        }
         valArray.forEach(function (data) {
             switch (sRestrict) {
                 case "Album":
@@ -196,18 +249,16 @@ $(document).ready(function () {
 
                     break;
                 case "Track":
-                    $('#values').append('<li>' + "Artist:" + data.artist + '<br>' + "Song Name: " + data.name + '<br>' + " Album:" + data.album + '<br>' + '<img src =' + data.images + ' alt =' + data.name + 'height="200" width ="200"' + '>' + '</li>')
+                    $('#values').append('<li id ="2">' + "Artist:" + data.artist +'</li> <li id="1">'+ "Song Name: " + data.name +'</li><li id ="3">' + " Album:" + data.album +'</li><li id ="4">' +'<img src =' + data.images + ' alt =' + data.name + 'height="200" width ="200"><input type="button" id ="addToPlist" value ="Add to Playlist"> </li>')
 
                     break;
-                case "All":
-                    $('#values').append('<li>' + "Artist:" + data.artist + '<br>' + "Song Name: " + data.name + '<br>' + " Album:" + data.album + '<br>' + '<img src =' + data.images + ' alt =' + data.name + 'height="200" width ="200"' + '>' + '</li>')
+    
+                 case "Load":
 
-                    break;
-                case "Load":
-
-                    $('#values').append('<li>' + "Artist:" + data.artist + '<br>' + "Song Name: " + data.name + '<br>' + " Album:" + data.album + '<br>' + '<img src =' + data.images + ' alt =' + data.name + 'height="200" width ="200"' + '>' + '</li>')
+                    $('#values').append('<li>' + "Artist:" + data.artist + '<br>' + "Song Name: " + data.name + '<br>' + " Album:" + data.album + '<br> <img src =' + data.images + ' alt =' + data.name + 'height="200" width ="200"> <img src = "./img/up.png" id ="upVote" alt="upVote" height="20" width ="20"><img src = "./img/dwn.png" id ="dwnVote" alt="downVote" height="20" width ="20"> </li>')
             }
         });
+        sRestrict = "Track"
 
     }
         };
@@ -215,16 +266,12 @@ $(document).ready(function () {
 
 
 }
-
-
-    $('#submit').click(function (e) {
-
-        searchName = $('#searchBox').val()
-        console.log(sRestrict)
-        search(searchName, sRestrict);
+    $('#addToPlist').click(function (e) {
+        alert("ADDED")
         e.preventDefault();
     });
 
+   
 
 
 });
